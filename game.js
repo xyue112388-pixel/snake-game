@@ -4,6 +4,22 @@
   const GRID = 20;            // 网格数（20 x 20）
   const CELL = 25;            // 单格像素
   const BEST_KEY = "snake_best_score";
+  const THEME_KEY = "snake_theme";
+
+  // Canvas 调色板:跟随主题切换(蛇身渐变/食物/道具为高饱和色,两套主题通用)
+  const CANVAS_THEMES = {
+    dark: {
+      board: "#0b1220",
+      grid: "rgba(148, 163, 184, 0.06)",
+      eye: "#0f172a",
+    },
+    light: {
+      board: "#f8fafc",
+      grid: "rgba(71, 85, 105, 0.12)",
+      eye: "#0f172a",
+    },
+  };
+  let theme = "dark";
 
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
@@ -17,6 +33,28 @@
   const btnRestart = document.getElementById("btnRestart");
   const bonusBoxEl = document.getElementById("bonusBox");
   const bonusTimeEl = document.getElementById("bonusTime");
+  const btnTheme = document.getElementById("btnTheme");
+
+  // ===== 主题切换 =====
+  // 优先级:用户显式选择(localStorage) > 系统偏好 > 默认深色
+  function resolveInitialTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === "dark" || saved === "light") return saved;
+    return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+
+  function applyTheme(t) {
+    theme = t;
+    document.documentElement.dataset.theme = t;
+    localStorage.setItem(THEME_KEY, t);
+    btnTheme.textContent = t === "dark" ? "☀️" : "🌙";
+    btnTheme.title = t === "dark" ? "切换到浅色主题(T)" : "切换到深色主题(T)";
+    if (ctx) draw();   // 用新调色板重绘画布
+  }
+
+  function toggleTheme() {
+    applyTheme(theme === "dark" ? "light" : "dark");
+  }
 
   let snake, dir, nextDir, food, score, best, state, timer, speed, bonus, boost;
 
@@ -120,12 +158,13 @@
   }
 
   function draw() {
+    const pal = CANVAS_THEMES[theme];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // 网格底纹
-    ctx.fillStyle = "#0b1220";
+    ctx.fillStyle = pal.board;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = "rgba(148, 163, 184, 0.06)";
+    ctx.strokeStyle = pal.grid;
     ctx.lineWidth = 1;
     for (let i = 1; i < GRID; i++) {
       ctx.beginPath();
@@ -199,7 +238,7 @@
     // 眼睛
     let ex = h.x * CELL + CELL / 2 + dir.x * 4;
     let ey = h.y * CELL + CELL / 2 + dir.y * 4;
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = CANVAS_THEMES[theme].eye;
     ctx.beginPath();
     ctx.arc(ex - 4, ey, 2.6, 0, Math.PI * 2);
     ctx.arc(ex + 4, ey, 2.6, 0, Math.PI * 2);
@@ -282,6 +321,7 @@
     ArrowRight: "right", KeyD: "right", D: "right", d: "right",
     Space: "space",
     KeyR: "restart",   // 新功能:按 R 键重新开始
+    KeyT: "theme",     // 新功能:按 T 键切换主题
   };
   document.addEventListener("keydown", (e) => {
     const action = KEYMAP[e.code];
@@ -293,6 +333,10 @@
     }
     if (action === "restart") {
       restart();
+      return;
+    }
+    if (action === "theme") {
+      toggleTheme();
       return;
     }
     setDir(action);
@@ -319,6 +363,7 @@
   btnStart.addEventListener("click", start);
   btnPause.addEventListener("click", pause);
   btnRestart.addEventListener("click", restart);
+  btnTheme.addEventListener("click", toggleTheme);
 
   // 加速道具倒计时(常驻,每秒刷新)
   setInterval(() => {
@@ -329,6 +374,7 @@
     }
   }, 1000);
 
+  applyTheme(resolveInitialTheme());
   init();
   setState("ready");
 })();

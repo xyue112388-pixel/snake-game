@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,26 +7,72 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
+  /* ===== 主题变量:深色(默认) ===== */
+  :root, html[data-theme="dark"] {
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+    --text: #e2e8f0;
+    --panel-bg: rgba(30, 41, 59, 0.65);
+    --panel-border: rgba(148, 163, 184, 0.15);
+    --panel-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+    --box-bg: rgba(15, 23, 42, 0.7);
+    --box-border: rgba(148, 163, 184, 0.2);
+    --label: #94a3b8;
+    --value: #f8fafc;
+    --board-border: rgba(148, 163, 184, 0.25);
+    --overlay-bg: rgba(11, 18, 32, 0.82);
+    --hint: #64748b;
+    --kbd-bg: rgba(148, 163, 184, 0.15);
+    --kbd-border: rgba(148, 163, 184, 0.3);
+    --btn-grad: linear-gradient(90deg, #4ade80, #22d3ee);
+    --btn-text: #0f172a;
+    --btn-secondary-bg: rgba(148, 163, 184, 0.15);
+    --btn-secondary-text: #e2e8f0;
+  }
+
+  /* ===== 主题变量:浅色 ===== */
+  html[data-theme="light"] {
+    --bg-gradient: linear-gradient(135deg, #dbeafe 0%, #e2e8f0 55%, #d1fae5 100%);
+    --text: #0f172a;
+    --panel-bg: rgba(255, 255, 255, 0.75);
+    --panel-border: rgba(51, 65, 85, 0.12);
+    --panel-shadow: 0 25px 60px rgba(15, 23, 42, 0.18);
+    --box-bg: rgba(255, 255, 255, 0.85);
+    --box-border: rgba(51, 65, 85, 0.15);
+    --label: #64748b;
+    --value: #0f172a;
+    --board-border: rgba(51, 65, 85, 0.25);
+    --overlay-bg: rgba(241, 245, 249, 0.85);
+    --hint: #475569;
+    --kbd-bg: rgba(51, 65, 85, 0.08);
+    --kbd-border: rgba(51, 65, 85, 0.25);
+    --btn-grad: linear-gradient(90deg, #16a34a, #0891b2);
+    --btn-text: #ffffff;
+    --btn-secondary-bg: rgba(51, 65, 85, 0.08);
+    --btn-secondary-text: #0f172a;
+  }
+
   body {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
+    background: var(--bg-gradient);
     font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-    color: #e2e8f0;
+    color: var(--text);
     padding: 20px;
+    transition: background 0.3s ease, color 0.3s ease;
   }
 
   .game-wrap {
-    background: rgba(30, 41, 59, 0.65);
-    border: 1px solid rgba(148, 163, 184, 0.15);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
     border-radius: 20px;
     padding: 24px 28px 28px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+    box-shadow: var(--panel-shadow);
     max-width: 620px;
     width: 100%;
     backdrop-filter: blur(6px);
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
 
   .header {
@@ -46,27 +92,42 @@
     color: transparent;
   }
 
-  .scores { display: flex; gap: 12px; }
+  .scores { display: flex; gap: 12px; align-items: center; }
 
   .score-box {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: var(--box-bg);
+    border: 1px solid var(--box-border);
     border-radius: 10px;
     padding: 6px 14px;
     text-align: center;
     min-width: 76px;
+    transition: background 0.3s ease, border-color 0.3s ease;
   }
 
-  .score-box .label { font-size: 11px; color: #94a3b8; letter-spacing: 1px; }
-  .score-box .value { font-size: 20px; font-weight: 700; color: #f8fafc; }
-  .score-box.high .value { color: #fbbf24; }
+  .score-box .label { font-size: 11px; color: var(--label); letter-spacing: 1px; }
+  .score-box .value { font-size: 20px; font-weight: 700; color: var(--value); }
+  .score-box.high .value { color: #f59e0b; }
+
+  #btnTheme {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1;
+    border-radius: 50%;
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--kbd-border);
+  }
 
   .board-wrap {
     position: relative;
     border-radius: 14px;
     overflow: hidden;
-    border: 2px solid rgba(148, 163, 184, 0.25);
-    background: #0b1220;
+    border: 2px solid var(--board-border);
+    background: var(--board-bg, #0b1220);
+    transition: border-color 0.3s ease;
   }
 
   canvas {
@@ -84,7 +145,7 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: rgba(11, 18, 32, 0.82);
+    background: var(--overlay-bg);
     transition: opacity 0.25s ease;
     text-align: center;
     padding: 20px;
@@ -93,8 +154,8 @@
   .overlay.hidden { opacity: 0; pointer-events: none; }
 
   .overlay .title { font-size: 26px; font-weight: 800; letter-spacing: 2px; }
-  .overlay .sub { font-size: 14px; color: #94a3b8; line-height: 1.7; }
-  .overlay .score { font-size: 15px; color: #fbbf24; font-weight: 600; }
+  .overlay .sub { font-size: 14px; color: var(--label); line-height: 1.7; }
+  .overlay .score { font-size: 15px; color: #f59e0b; font-weight: 600; }
 
   .controls {
     display: flex;
@@ -111,8 +172,8 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    color: #0f172a;
-    background: linear-gradient(90deg, #4ade80, #22d3ee);
+    color: var(--btn-text);
+    background: var(--btn-grad);
     transition: transform 0.12s ease, filter 0.12s ease;
     font-family: inherit;
   }
@@ -121,22 +182,22 @@
   button:active { transform: translateY(0); }
 
   button.secondary {
-    background: rgba(148, 163, 184, 0.15);
-    color: #e2e8f0;
-    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 1px solid var(--kbd-border);
   }
 
   .hint {
     margin-top: 14px;
     text-align: center;
     font-size: 12.5px;
-    color: #64748b;
+    color: var(--hint);
     line-height: 1.8;
   }
 
   .hint kbd {
-    background: rgba(148, 163, 184, 0.15);
-    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: var(--kbd-bg);
+    border: 1px solid var(--kbd-border);
     border-radius: 5px;
     padding: 1px 7px;
     font-size: 11px;
@@ -162,6 +223,7 @@
         <div class="label">⚡ 双倍得分</div>
         <div class="value" id="bonusTime">0</div>
       </div>
+      <button id="btnTheme" title="切换主题(T)">🌙</button>
     </div>
   </div>
 
@@ -180,7 +242,7 @@
   </div>
 
   <div class="hint">
-    方向键 / WASD 控制移动 · 空格键暂停<br>
+    方向键 / WASD 控制移动 · 空格键暂停 · R 重开 · T 切换主题<br>
     手机端可直接在屏幕上滑动
   </div>
 </div>
