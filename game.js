@@ -1,4 +1,3 @@
-
 (() => {
   "use strict";
 
@@ -16,8 +15,10 @@
   const btnStart = document.getElementById("btnStart");
   const btnPause = document.getElementById("btnPause");
   const btnRestart = document.getElementById("btnRestart");
+  const bonusBoxEl = document.getElementById("bonusBox");
+  const bonusTimeEl = document.getElementById("bonusTime");
 
-  let snake, dir, nextDir, food, score, best, state, timer, speed;
+  let snake, dir, nextDir, food, score, best, state, timer, speed, bonus, boost;
 
   // state: "ready" | "running" | "paused" | "over"
   const DIRS = {
@@ -33,6 +34,9 @@
     nextDir = dir;
     score = 0;
     speed = 160;
+    bonus = null;
+    boost = 0;
+    bonusBoxEl.style.display = "none";
     best = Number(localStorage.getItem(BEST_KEY) || 0);
     bestEl.textContent = best;
     scoreEl.textContent = score;
@@ -48,6 +52,23 @@
       };
       if (!snake.some(s => s.x === p.x && s.y === p.y)) {
         food = p;
+        return;
+      }
+    }
+  }
+
+  // 生成加速道具(不与蛇、食物重叠;场上已有则不重复生成)
+  function placeBonus() {
+    if (bonus) return;
+    for (let tries = 0; tries < 200; tries++) {
+      const p = {
+        x: Math.floor(Math.random() * GRID),
+        y: Math.floor(Math.random() * GRID),
+      };
+      const onSnake = snake.some(s => s.x === p.x && s.y === p.y);
+      if (!onSnake && !(food.x === p.x && food.y === p.y)) {
+        bonus = p;
+        setTimeout(() => { bonus = null; draw(); }, 8000);  // 8 秒后消失
         return;
       }
     }
@@ -70,8 +91,16 @@
 
     snake.unshift(head);
 
+    // 吃到加速道具:10 秒内双倍得分
+    if (bonus && head.x === bonus.x && head.y === bonus.y) {
+      boost = 10;
+      bonus = null;
+      bonusBoxEl.style.display = "inline-block";
+      bonusTimeEl.textContent = boost;
+    }
+
     if (willEat) {
-      score += 10;
+      score += boost > 0 ? 20 : 10;   // 加速期间双倍得分
       scoreEl.textContent = score;
       if (score > best) {
         best = score;
@@ -79,6 +108,7 @@
         localStorage.setItem(BEST_KEY, String(best));
       }
       placeFood();
+      if (Math.random() < 0.4) placeBonus();   // 40% 概率刷出加速道具
       speed = Math.max(70, speed - 5);   // 越吃越快
       clearInterval(timer);
       timer = setInterval(tick, speed);
@@ -126,6 +156,26 @@
     ctx.beginPath();
     ctx.arc(fx + CELL * 0.36, fy + CELL * 0.36, CELL * 0.09, 0, Math.PI * 2);
     ctx.fill();
+
+    // 加速道具(金色光球)
+    if (bonus) {
+      const bx = bonus.x * CELL, by = bonus.y * CELL;
+      const bglow = ctx.createRadialGradient(bx + CELL / 2, by + CELL / 2, 2, bx + CELL / 2, by + CELL / 2, CELL * 0.9);
+      bglow.addColorStop(0, "rgba(250, 204, 21, 0.55)");
+      bglow.addColorStop(1, "rgba(250, 204, 21, 0)");
+      ctx.fillStyle = bglow;
+      ctx.beginPath();
+      ctx.arc(bx + CELL / 2, by + CELL / 2, CELL * 0.9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#facc15";
+      ctx.beginPath();
+      ctx.arc(bx + CELL / 2, by + CELL / 2, CELL * 0.34, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.beginPath();
+      ctx.arc(bx + CELL * 0.36, by + CELL * 0.36, CELL * 0.09, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
     // 蛇身（渐变）
     snake.forEach((seg, i) => {
@@ -264,6 +314,15 @@
   btnStart.addEventListener("click", start);
   btnPause.addEventListener("click", pause);
   btnRestart.addEventListener("click", restart);
+
+  // 加速道具倒计时(常驻,每秒刷新)
+  setInterval(() => {
+    if (boost > 0) {
+      boost--;
+      bonusTimeEl.textContent = boost;
+      if (boost === 0) bonusBoxEl.style.display = "none";
+    }
+  }, 1000);
 
   init();
   setState("ready");
