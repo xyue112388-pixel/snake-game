@@ -1,0 +1,7 @@
+# WorkBuddy 工作区数据（本机记忆，不纳入版本控制）
+.workbuddy/
+
+# 系统与编辑器文件
+.DS_Store
+Thumbs.db
+*.log
