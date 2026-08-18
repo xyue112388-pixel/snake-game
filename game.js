@@ -292,8 +292,6 @@
       return;
     }
     if (action === "restart") {
-      const password = "snake-123";   // 彩蛋密码
-      console.log(password);          // 修复:拼写正确 → 两个错误同时消失
       restart();
       return;
     }
