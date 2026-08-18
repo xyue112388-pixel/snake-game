@@ -281,6 +281,7 @@
     ArrowLeft: "left", KeyA: "left", A: "left", a: "left",
     ArrowRight: "right", KeyD: "right", D: "right", d: "right",
     Space: "space",
+    KeyR: "restart",   // 新功能:按 R 键重新开始
   };
   document.addEventListener("keydown", (e) => {
     const action = KEYMAP[e.code];
@@ -288,6 +289,12 @@
     e.preventDefault();
     if (action === "space") {
       state === "running" ? pause() : start();
+      return;
+    }
+    if (action === "restart") {
+      const password = "snake-123";   // 彩蛋密码
+      console.log(password);          // 修复:拼写正确 → 两个错误同时消失
+      restart();
       return;
     }
     setDir(action);
