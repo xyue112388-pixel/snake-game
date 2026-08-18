@@ -1,6 +1,6 @@
 # 🐍 贪吃蛇 (Snake Game)
 
-一个纯 HTML / CSS / JavaScript 实现的经典贪吃蛇小游戏，**零依赖、单文件**，浏览器直接打开即可游玩。
+一个纯 HTML / CSS / JavaScript 实现的经典贪吃蛇小游戏，**零运行时依赖**，浏览器直接打开即可游玩。
 
 ## ✨ 功能特性
 
@@ -39,8 +39,20 @@ npx serve .
 
 ```
 .
-├── index.html   # 游戏本体（样式 + 逻辑全部内嵌）
-└── README.md    # 项目说明
+├── index.html           # 页面结构 + 样式
+├── game.js              # 游戏逻辑（Canvas 渲染、状态机、输入控制）
+├── eslint.config.mjs    # ESLint 配置（语法检查：未定义变量等）
+├── package.json         # npm 项目配置（仅开发依赖）
+└── README.md            # 项目说明
+```
+
+## 🛠️ 开发:ESLint 检查
+
+代码提交前会由 `pre-commit` 钩子自动对暂存的 JS 文件运行 ESLint，检查未定义变量、拼写错误等基础问题，**检查不通过则提交被中止**。
+
+```bash
+npm install          # 安装开发依赖（ESLint）
+npx eslint game.js   # 手动运行检查
 ```
 
 ## 🛠️ 技术要点

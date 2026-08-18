@@ -1,0 +1,17 @@
+{
+  "name": "2026-08-18-16-53-39",
+  "version": "1.0.0",
+  "description": "一个纯 HTML / CSS / JavaScript 实现的经典贪吃蛇小游戏，**零依赖、单文件**，浏览器直接打开即可游玩。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^17.11.0"
+  }
+}

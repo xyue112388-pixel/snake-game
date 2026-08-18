@@ -5,3 +5,6 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Node 依赖
+node_modules/
